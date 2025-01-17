@@ -26,6 +26,7 @@ let Game _ =
                 DealerHand  = [card3; card4]
                 Shoe        = cards
             } |> playerTurn
+
         | _ -> failwith "deal unsuccessful"
 
     and playerTurn (state :GameState) =
@@ -42,10 +43,10 @@ let Game _ =
             then 
                 do Console.WriteLine $"The player busted!"
                 do deal state.Shoe
+            else
 
         do Console.WriteLine $"Dealer's face-up card:"
         do state.DealerHand.[0] |> Card.print |> Console.WriteLine
-
         do Console.WriteLine "hit or stay?"
 
         let rec prompt() =
@@ -71,19 +72,6 @@ let Game _ =
         do Console.WriteLine "Dealer's Hand"
         do state.DealerHand |> List.map Card.print |> ignore
         do Console.ReadLine() |> ignore
-
-        let handValue = evaluateHandLow state.DealerHand
-        if handValue > 21
-            then 
-                do Console.WriteLine $"The House busted!"
-                do deal state.Shoe
-
-        elif handValue > 16
-            then do resolution state
-
-        else dealerTurn { state with 
-                                DealerHand  = state.Shoe.Head :: state.DealerHand
-                                Shoe        = state.Shoe.Tail }
 
         match evaluateHandLow state.DealerHand with
         |handValue when handValue > 21
@@ -114,14 +102,11 @@ let Game _ =
         |p, d when p = d
             -> do Console.WriteLine $"It's a tie! Player ({p}) vs House ({d})"
 
-        |_  -> 
-            do Console.WriteLine "Unexpected case in pattern match"
-            ()
+        |_  
+            -> failwith "Unexpected case in pattern match"
 
         deal state.Shoe
-
-    let testShoe = Card.randomShoePermutation
     
-    deal(testShoe)
+    deal(Card.randomShoePermutation)
 
     0
