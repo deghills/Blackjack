@@ -14,6 +14,8 @@ let Game _ =
         let shoe', playerHand = Card.drawCards shoe [] 2
         let shoe'', dealerHand = Card.drawCards shoe' [] 2
 
+        Console.WriteLine $"{playerHand}{dealerHand}"
+
         if evaluateHandHigh playerHand = 21
             then 
                 do Console.WriteLine $"Blackjack for the player! ({Card.printHand playerHand})"
