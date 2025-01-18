@@ -63,6 +63,29 @@
     let orderedShoe = [Two; Three; Four; Five; Six; Seven; Eight; Nine; Ten; Jack; Queen; King; Ace]
                     |> quadruple |> quadruple
 
-    let randomShoePermutation = 
+    let randomShoePermutation() = 
         let rng = new Random()
         orderedShoe |> List.sortBy (fun x -> rng.Next(51))
+
+    let drawCard shoe hand =
+        match shoe with
+        |topCard :: remaining ->
+            remaining, topCard :: hand
+
+        |[] ->
+            do Console.WriteLine()
+            do Console.WriteLine("NEW SHOE")
+            do Console.WriteLine()
+            let newShoe = randomShoePermutation()
+            newShoe.Tail, newShoe.Head :: hand
+
+    let drawCards shoe hand nOfCards =
+        let rec loop remaining acc depth = 
+            match depth with
+            |n when (n = 0) ->
+                remaining, acc
+
+            |n ->
+                let newShoe, newHand = drawCard remaining acc
+                loop newShoe newHand (n-1)
+        loop shoe hand nOfCards

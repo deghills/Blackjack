@@ -5,29 +5,28 @@ open GameState
 [<EntryPoint>]
 let Game _ =
 
-    let rec deal (shoe :Card list) =
+    let rec deal (shoe :Card list) =       
 
         do Console.WriteLine "//////"
         do Console.WriteLine "////// !NEW ROUND!"
         do Console.WriteLine "//////"
 
-        match shoe with 
-        | card1 :: card2 :: card3 :: card4 :: cards ->
+        let shoe', playerHand = Card.drawCards shoe [] 2
+        let shoe'', dealerHand = Card.drawCards shoe' [] 2
 
-            let playerHand = [card1; card2]
-            if evaluateHandHigh playerHand = 21
-                then 
-                    do Console.WriteLine $"Blackjack for the player! ({Card.printHand playerHand})"
-                    do deal cards
-                else
+        Console.WriteLine $"{playerHand}{dealerHand}"
 
-            {
-                PlayerHand  = playerHand
-                DealerHand  = [card3; card4]
-                Shoe        = cards
-            } |> playerTurn
+        if evaluateHandHigh playerHand = 21
+            then 
+                do Console.WriteLine $"Blackjack for the player! ({Card.printHand playerHand})"
+                do deal shoe''
+            else
 
-        | _ -> failwith "deal unsuccessful"
+        playerTurn {
+            PlayerHand  = playerHand
+            DealerHand  = dealerHand
+            Shoe        = shoe''
+        }
 
     and playerTurn (state :GameState) =
         
@@ -51,12 +50,12 @@ let Game _ =
 
         let rec prompt() =
             match Console.ReadLine() with
-            |"hit" 
-                -> do playerTurn {                    
+            |"hit" -> 
+                let Shoe', PlayerHand' = Card.drawCard state.Shoe state.PlayerHand
+                do playerTurn {                    
                     state with 
-                        PlayerHand = state.Shoe.Head :: state.PlayerHand
-                        Shoe = state.Shoe.Tail 
-                }
+                        Shoe = Shoe'
+                        PlayerHand = PlayerHand' }
                 
             |"stay" 
                 -> do dealerTurn state
@@ -78,12 +77,14 @@ let Game _ =
             ->  do Console.WriteLine $"The House busted!"
                 do deal state.Shoe
 
-        |handValue when handValue > 16
-            ->  do resolution state
+        |handValue when handValue > 16 ->
+            do resolution state
 
-        |_  -> dealerTurn { state with 
-                                DealerHand  = state.Shoe.Head :: state.DealerHand
-                                Shoe        = state.Shoe.Tail }
+        |_  -> 
+            let Shoe', DealerHand' = Card.drawCard state.Shoe state.DealerHand
+            dealerTurn { state with 
+                                Shoe        = Shoe'
+                                DealerHand  = DealerHand' }
 
     and resolution (state :GameState) =
         let playerScore = 
@@ -107,6 +108,6 @@ let Game _ =
 
         deal state.Shoe
     
-    deal(Card.randomShoePermutation)
+    deal(Card.randomShoePermutation())
 
     0
