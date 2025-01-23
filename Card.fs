@@ -81,21 +81,20 @@
         |King   -> "King "
         |Ace    -> "Ace "
 
-    let toStringHand cards = cards |> List.map toString |> List.reduce(+)
-
+    let toStringHand = List.map toString >> List.reduce(+)
     let print = toString >> Console.Write
     let println = toString >> Console.WriteLine
 
     let printHand = List.map print >> ignore
 
-    let private quadruple l = 
-        let rec loop acc remaining =
-            match remaining with
-            | [] -> acc
-            | head :: tail -> loop (head :: head :: head :: head :: acc) tail
-        loop [] l
+    let orderedShoe =
+        let quadruple l = 
+            let rec loop acc remaining =
+                match remaining with
+                | [] -> acc
+                | head :: tail -> loop (head :: head :: head :: head :: acc) tail
+            loop [] l
 
-    let orderedShoe = 
         [Two; Three; Four; Five; Six; Seven; Eight; Nine; Ten; Jack; Queen; King; Ace]
         |> quadruple |> quadruple
 

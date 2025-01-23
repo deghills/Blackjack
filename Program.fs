@@ -48,47 +48,43 @@ let Game _ =
     and playerTurn (state :GameState) =
         
         do Console.WriteLine()
-        do Console.WriteLine $"Your hand:"
-        do state.PlayerHand 
-            |> List.map Card.print 
-            |> ignore 
-            |> Console.WriteLine
-            |> Console.WriteLine
+        do Console.WriteLine "Your hand:"
+        do Card.printHand state.PlayerHand
+        do () |> Console.WriteLine |> Console.WriteLine
 
         if (checkBust state.PlayerHand)
             then 
-                do Console.WriteLine $"The player busted!"
+                do Console.WriteLine "The player busted!"
                 do deal { state with Bankroll = state.Bankroll - state.BetSize }
-            else ()
+            else
 
         do Console.WriteLine "Dealer's face-up card:"
-        do state.DealerHand.Head |> Card.print |> Console.WriteLine |> Console.WriteLine
+        do state.DealerHand.Head |> Card.println |> Console.WriteLine
         do Console.WriteLine "hit/stay/double?"
 
         let rec prompt() =
             match Console.ReadLine() with
             |"hit" -> 
                 let shoe', playerHand' = Card.drawCard state.Shoe state.PlayerHand
-                do playerTurn {                    
-                    state with 
-                        Shoe = shoe'
-                        PlayerHand = playerHand' }
+                do playerTurn { state with 
+                                    Shoe = shoe'
+                                    PlayerHand = playerHand' }
                 
             |"stay" -> 
                 do dealerTurn state
 
             |"double" ->
                 let shoe', playerHand' = Card.drawCard state.Shoe state.PlayerHand
+
                 if(checkBust playerHand')
                     then 
-                        do Console.Write $"The player busted! ( "
-                        do Card.printHand playerHand'
-                        do Console.WriteLine ")"
+                        do Console.Write $"The player busted! ( {Card.toStringHand playerHand'})"
                         do deal { state with
                                     Shoe = shoe'
                                     PlayerHand = playerHand'
                                     Bankroll = state.Bankroll - (2*state.BetSize)}
                     else
+
                 do Console.WriteLine $"Your hand: {Card.toStringHand playerHand'}"
                 do dealerTurn { state with 
                                     Shoe = shoe'
@@ -104,7 +100,7 @@ let Game _ =
         
         do Console.WriteLine()
         do Console.WriteLine "Dealer's Hand"
-        do state.DealerHand |> List.map Card.print |> ignore
+        do Card.printHand state.DealerHand
         do Console.ReadLine() |> ignore
 
         match evaluate state.DealerHand with
@@ -118,10 +114,9 @@ let Game _ =
 
         |_  -> 
             let Shoe', DealerHand' = Card.drawCard state.Shoe state.DealerHand
-            dealerTurn 
-                { state with 
-                    Shoe        = Shoe'
-                    DealerHand  = DealerHand' }
+            dealerTurn { state with 
+                            Shoe        = Shoe'
+                            DealerHand  = DealerHand' }
 
     and resolution (state :GameState) =
 
