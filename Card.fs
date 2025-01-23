@@ -16,24 +16,54 @@
         |King
         |Ace
 
-    let evaluate highAce = function
-        |Two    -> 2
-        |Three  -> 3
-        |Four   -> 4
-        |Five   -> 5
-        |Six    -> 6
-        |Seven  -> 7
-        |Eight  -> 8
-        |Nine   -> 9
-        |Ten |Jack |Queen |King -> 10
-        |Ace -> if highAce then 11 else 1
+    let evaluate hand =
+        let rec evaluateAces acc aces = 
+            let maxEvaluation = acc + aces * 11
 
+            if aces <= 0 
+                then acc
+            elif maxEvaluation <= 21 
+                then maxEvaluation
+            else evaluateAces (acc+1) (aces-1)
 
-    let evaluateHandLow     = List.map (evaluate false) >> List.sum
-    let evaluateHandHigh    = List.map (evaluate true) >> List.sum
+        let rec loop acc aces remaining =
+            match remaining with 
+            |[] ->
+                evaluateAces acc aces
 
-    let checkBustLow    = evaluateHandLow >> fun x -> x > 21
-    let checkBustHigh   = evaluateHandHigh >> fun x -> x > 21
+            |Ace :: cards ->
+                loop acc (aces+1) cards
+
+            |Two :: cards ->
+                loop (acc+2) aces cards
+
+            |Three :: cards ->
+                loop (acc+3) aces cards
+
+            |Four :: cards ->
+                loop (acc+4) aces cards
+
+            |Five :: cards ->
+                loop (acc+5) aces cards
+
+            |Six :: cards ->
+                loop (acc+6) aces cards
+
+            |Seven :: cards ->
+                loop (acc+7) aces cards
+
+            |Eight :: cards ->
+                loop (acc+8) aces cards
+
+            |Nine :: cards ->
+                loop (acc+9) aces cards
+
+            |Ten :: cards | Jack :: cards | Queen :: cards | King :: cards ->
+                loop (acc+10) aces cards
+
+        loop 0 0 hand
+
+    let checkBust = evaluate >> (fun x -> x>21)
 
     let toString = 
         function

@@ -6,7 +6,6 @@ open GameState
 let Game _ =
 
     let startingBankroll = 200<Dollars>
-    let threeToTwo = 15<Dollars>
 
     let rec deal (state :GameState) =
 
@@ -26,10 +25,11 @@ let Game _ =
         let shoe', playerHand = Card.drawCards state.Shoe [] 2
         let shoe'', dealerHand = Card.drawCards shoe' [] 2
 
-        if evaluateHandHigh playerHand = 21
-            then 
-                do Console.WriteLine $"Blackjack for the player! ({Card.printHand playerHand})"
-                do Console.WriteLine $"You win {threeToTwo}"
+        if evaluate playerHand = 21
+            then
+                let threeToTwo = bet' + bet'/2
+                do Console.WriteLine $"Blackjack for the player! ({Card.toStringHand playerHand})"
+                do Console.WriteLine $"You profit {threeToTwo}"
                 do deal 
                     { state with 
                         Shoe = shoe''
@@ -55,7 +55,7 @@ let Game _ =
             |> Console.WriteLine
             |> Console.WriteLine
 
-        if (checkBustLow state.PlayerHand)
+        if (checkBust state.PlayerHand)
             then 
                 do Console.WriteLine $"The player busted!"
                 do deal { state with Bankroll = state.Bankroll - state.BetSize }
@@ -79,7 +79,7 @@ let Game _ =
 
             |"double" ->
                 let shoe', playerHand' = Card.drawCard state.Shoe state.PlayerHand
-                if(checkBustLow playerHand')
+                if(checkBust playerHand')
                     then 
                         do Console.Write $"The player busted! ( "
                         do Card.printHand playerHand'
@@ -107,10 +107,11 @@ let Game _ =
         do state.DealerHand |> List.map Card.print |> ignore
         do Console.ReadLine() |> ignore
 
-        match evaluateHandLow state.DealerHand with
-        |handValue when handValue > 21
-            ->  do Console.WriteLine $"The House busted!"
-                do deal { state with Bankroll = state.Bankroll + state.BetSize }
+        match evaluate state.DealerHand with
+        |handValue when handValue > 21 ->
+            do Console.WriteLine $"The House busted!"
+            do Console.WriteLine $"You profit {state.BetSize}"
+            do deal { state with Bankroll = state.Bankroll + state.BetSize }
 
         |handValue when handValue > 16 ->
             do resolution state
@@ -123,16 +124,11 @@ let Game _ =
                     DealerHand  = DealerHand' }
 
     and resolution (state :GameState) =
-        let playerScore = 
-            if checkBustHigh state.PlayerHand then evaluateHandLow state.PlayerHand else evaluateHandHigh state.PlayerHand
 
-        let dealerScore =
-            if checkBustHigh state.DealerHand then evaluateHandLow state.DealerHand else evaluateHandHigh state.DealerHand
-
-        match playerScore, dealerScore with
+        match evaluate state.PlayerHand, evaluate state.DealerHand with
         |p, d when p > d -> 
             do Console.WriteLine $"You win the hand! Player ({p}) vs House ({d})"
-            do Console.WriteLine $"You win {state.BetSize}"
+            do Console.WriteLine $"You profit {state.BetSize}"
             deal { state with Bankroll = state.Bankroll + state.BetSize }
 
         |p, d when p < d -> 
