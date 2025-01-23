@@ -28,28 +28,33 @@
         |Ten |Jack |Queen |King -> 10
         |Ace -> if highAce then 11 else 1
 
+
     let evaluateHandLow     = List.map (evaluate false) >> List.sum
     let evaluateHandHigh    = List.map (evaluate true) >> List.sum
 
     let checkBustLow    = evaluateHandLow >> fun x -> x > 21
     let checkBustHigh   = evaluateHandHigh >> fun x -> x > 21
 
-    let print = 
+    let toString = 
         function
-        |Two    -> "Two"
-        |Three  -> "Three"
-        |Four   -> "Four"
-        |Five   -> "Five"
-        |Six    -> "Six"
-        |Seven  -> "Seven"
-        |Eight  -> "Eight"
-        |Nine   -> "Nine"
-        |Ten    -> "Ten"
-        |Jack   -> "Jack"
-        |Queen  -> "Queen"
-        |King   -> "King"
-        |Ace    -> "Ace"
-        >> Console.WriteLine
+        |Two    -> "Two "
+        |Three  -> "Three "
+        |Four   -> "Four "
+        |Five   -> "Five "
+        |Six    -> "Six "
+        |Seven  -> "Seven "
+        |Eight  -> "Eight "
+        |Nine   -> "Nine "
+        |Ten    -> "Ten "
+        |Jack   -> "Jack "
+        |Queen  -> "Queen "
+        |King   -> "King "
+        |Ace    -> "Ace "
+
+    let toStringHand cards = cards |> List.map toString |> List.reduce(+)
+
+    let print = toString >> Console.Write
+    let println = toString >> Console.WriteLine
 
     let printHand = List.map print >> ignore
 
@@ -60,8 +65,9 @@
             | head :: tail -> loop (head :: head :: head :: head :: acc) tail
         loop [] l
 
-    let orderedShoe = [Two; Three; Four; Five; Six; Seven; Eight; Nine; Ten; Jack; Queen; King; Ace]
-                    |> quadruple |> quadruple
+    let orderedShoe = 
+        [Two; Three; Four; Five; Six; Seven; Eight; Nine; Ten; Jack; Queen; King; Ace]
+        |> quadruple |> quadruple
 
     let randomShoePermutation() = 
         let rng = new Random()
