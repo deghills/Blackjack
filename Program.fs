@@ -167,7 +167,7 @@ let Game _ =
         |_  -> failwith "Unexpected case in pattern match"
     
     do deal {
-        Shoe = Two :: Two :: Card.randomShoePermutation()
+        Shoe = Card.randomShoePermutation()
         PlayerHand  = []
         DealerHand  = []
         Bankroll    = startingBankroll
