@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Notifications.fs" />
     <Compile Include="Card.fs" />
     <Compile Include="GameState.fs" />
     <Compile Include="Program.fs" />
