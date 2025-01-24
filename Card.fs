@@ -65,8 +65,7 @@
 
     let checkBust = evaluate >> (fun x -> x>21)
 
-    let toString = 
-        function
+    let toString = function
         |Two    -> "Two "
         |Three  -> "Three "
         |Four   -> "Four "

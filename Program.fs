@@ -9,6 +9,17 @@ let Game _ =
 
     let rec deal (state :GameState) =
 
+        if Option.isSome state.InactiveHand then
+            let inactiveHand, inactiveBet = match state.InactiveHand with Some x -> x |_ -> failwith "unexpected case in pattern match"
+            let dealerHand, shoe' = Card.drawCards state.Shoe [] 2
+            playerTurn { state with
+                            PlayerHand      = [inactiveHand]
+                            DealerHand      = dealerHand
+                            Shoe            = shoe'
+                            InactiveHand    = None
+                            BetSize         = inactiveBet
+                            IsInitialHand   = false }
+
         do Console.WriteLine "//////"
         do Console.WriteLine "////// !NEW ROUND!"
         do Console.WriteLine "//////"
@@ -43,6 +54,8 @@ let Game _ =
             Shoe        = shoe''
             Bankroll    = state.Bankroll
             BetSize     = bet'
+            InactiveHand = state.InactiveHand
+            IsInitialHand = true
         }
 
     and playerTurn (state :GameState) =
@@ -60,7 +73,23 @@ let Game _ =
 
         do Console.WriteLine "Dealer's face-up card:"
         do state.DealerHand.Head |> Card.println |> Console.WriteLine
-        do Console.WriteLine "hit/stay/double?"
+
+        if (state.IsInitialHand && match state.PlayerHand with 
+                                    |a :: b :: [] when a = b -> true 
+                                    |_ -> false) 
+            then
+                do Console.WriteLine "Split your pair?"
+                let playerResponse = Console.ReadLine()
+                (if playerResponse = "yes" || playerResponse = "y" || playerResponse = "split" then
+                    let halfBet = state.BetSize / 2
+                    playerTurn { state with 
+                                    PlayerHand = [state.PlayerHand.Head]
+                                    BetSize = halfBet
+                                    InactiveHand = Some (state.PlayerHand.Tail.Head, halfBet)
+                                    IsInitialHand = false }
+                    )
+
+        do Console.WriteLine (if state.IsInitialHand then "hit/stay/double?" else "hit or stay?")
 
         let rec prompt() =
             match Console.ReadLine() with
@@ -68,12 +97,13 @@ let Game _ =
                 let shoe', playerHand' = Card.drawCard state.Shoe state.PlayerHand
                 do playerTurn { state with 
                                     Shoe = shoe'
-                                    PlayerHand = playerHand' }
+                                    PlayerHand = playerHand' 
+                                    IsInitialHand = false}
                 
             |"stay" -> 
                 do dealerTurn state
 
-            |"double" ->
+            |"double" when state.IsInitialHand ->
                 let shoe', playerHand' = Card.drawCard state.Shoe state.PlayerHand
 
                 if(checkBust playerHand')
@@ -137,11 +167,13 @@ let Game _ =
         |_  -> failwith "Unexpected case in pattern match"
     
     do deal {
-        Shoe = Card.randomShoePermutation()
+        Shoe = Two :: Two :: Card.randomShoePermutation()
         PlayerHand  = []
         DealerHand  = []
         Bankroll    = startingBankroll
         BetSize     = 0<Dollars>
+        InactiveHand = None
+        IsInitialHand = false
         }
 
     0

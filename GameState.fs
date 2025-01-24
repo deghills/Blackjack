@@ -2,9 +2,11 @@
     open Card
     [<Measure>] type Dollars
     type GameState = {
-        PlayerHand  :Card list
-        DealerHand  :Card list
-        Shoe        :Card list
+        PlayerHand      :Card list
+        InactiveHand    :(Card*int<Dollars>) option
+        DealerHand      :Card list
+        Shoe            :Card list
+        IsInitialHand   :bool
         Bankroll    :int<Dollars>
         BetSize     :int<Dollars>
     }
