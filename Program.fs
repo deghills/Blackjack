@@ -11,7 +11,7 @@ let Game _ =
 
         match state.InactiveHand with
         |Some (inactiveHand, inactiveBet) ->
-            let dealerHand, shoe' = Card.drawCards state.Shoe [] 2
+            let shoe', dealerHand = Card.drawCards state.Shoe [] 2
             playerTurn { state with
                             PlayerHand      = [inactiveHand]
                             DealerHand      = dealerHand
@@ -141,7 +141,7 @@ let Game _ =
     and dealerTurn (state :GameState) =
         
         do Console.WriteLine()
-        do Console.WriteLine "Dealer's Hand"
+        do Console.WriteLine "Dealer's Hand:"
         do Card.printHand state.DealerHand
         do Console.ReadLine() |> ignore
 

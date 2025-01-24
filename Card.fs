@@ -116,7 +116,7 @@
     let drawCards shoe hand nOfCards =
         let rec loop remaining acc depth = 
             match depth with
-            |n when (n = 0) ->
+            |n when (n <= 0) ->
                 remaining, acc
 
             |n ->
