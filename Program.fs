@@ -26,12 +26,12 @@ let Game _ =
         do Console.WriteLine $"Your bankroll: {state.Bankroll}"
 
         do Console.WriteLine "What is your bet?"
-        let rec prompt() = 
+        let rec promptBet() = 
             match Console.ReadLine() |> Int32.TryParse with
             |true, result -> result * 1<Dollars>
-            |false, _ -> prompt()
+            |false, _ -> promptBet()
 
-        let bet' = prompt()
+        let bet' = promptBet()
 
         let shoe', playerHand = Card.drawCards state.Shoe [] 2
         let shoe'', dealerHand = Card.drawCards shoe' [] 2
@@ -91,7 +91,7 @@ let Game _ =
 
         do Console.WriteLine (if state.IsInitialHand then "hit/stay/double?" else "hit or stay?")
 
-        let rec prompt() =
+        let rec promptAction() =
             match Console.ReadLine() with
             |"hit" -> 
                 let shoe', playerHand' = Card.drawCard state.Shoe state.PlayerHand
@@ -122,9 +122,9 @@ let Game _ =
                                     BetSize = 2*state.BetSize}
 
             |_ -> 
-                prompt()
+                promptAction()
 
-        prompt()
+        promptAction()
 
     and dealerTurn (state :GameState) =
         
