@@ -107,9 +107,10 @@
             remaining, topCard :: hand
 
         |[] ->
-            do Console.WriteLine()
-            do Console.WriteLine("NEW SHOE")
-            do Console.WriteLine()
+            do 
+                Console.WriteLine()
+                Console.WriteLine("NEW SHOE")
+                Console.WriteLine()
             let newShoe = randomShoePermutation()
             newShoe.Tail, newShoe.Head :: hand
 

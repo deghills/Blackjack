@@ -21,10 +21,11 @@ let Game _ =
                                 IsInitialHand   = false }
         |None ->
 
-        do Console.WriteLine "//////"
-        do Console.WriteLine "////// !NEW ROUND!"
-        do Console.WriteLine "//////"
-        do Console.WriteLine $"Your bankroll: {state.Bankroll}"
+        do 
+            Console.WriteLine "//////"
+            Console.WriteLine "////// !NEW ROUND!"
+            Console.WriteLine "//////"
+            Console.WriteLine $"Your bankroll: {state.Bankroll}"
 
         let rec promptBet() = 
             do Console.WriteLine "What is your bet?"
@@ -40,13 +41,14 @@ let Game _ =
         match evaluate playerHand with
         |score when score = 21 ->
             let threeToTwo = bet + bet/2
-            do Console.WriteLine $"Blackjack for the player! ({Card.toStringHand playerHand})"
-            do Console.WriteLine $"You profit {threeToTwo}"
-            do deal 
-                { state with 
-                    Shoe = shoe''
-                    Bankroll = state.Bankroll + threeToTwo
-                }
+            do 
+                Console.WriteLine $"Blackjack for the player! ({Card.toStringHand playerHand})"
+                Console.WriteLine $"You profit {threeToTwo}"
+                deal 
+                    { state with 
+                        Shoe = shoe''
+                        Bankroll = state.Bankroll + threeToTwo
+                    }
         |_ ->
             
         do playerTurn {
@@ -61,19 +63,22 @@ let Game _ =
 
     and playerTurn (state :GameState) =
         
-        do Console.WriteLine()
-        do Console.WriteLine "Your hand:"
-        do Card.printHand state.PlayerHand
-        do () |> Console.WriteLine |> Console.WriteLine
+        do 
+            Console.WriteLine()
+            Console.WriteLine "Your hand:"
+            Card.printHand state.PlayerHand
+            () |> Console.WriteLine |> Console.WriteLine
 
         match checkBust state.PlayerHand with
         | true ->
-            do Console.WriteLine "The player busted!"
-            do deal { state with Bankroll = state.Bankroll - state.BetSize }
+            do 
+                Console.WriteLine "The player busted!"
+                deal { state with Bankroll = state.Bankroll - state.BetSize }
         | false ->
 
-        do Console.WriteLine "Dealer's face-up card:"
-        do state.DealerHand.Head |> Card.println |> Console.WriteLine
+        do 
+            Console.WriteLine "Dealer's face-up card:"
+            state.DealerHand.Head |> Card.println |> Console.WriteLine
 
         let rec promptSplit() =
             do Console.WriteLine "Split your pair?"
@@ -89,7 +94,7 @@ let Game _ =
                 promptSplit()
 
         match state.PlayerHand with 
-        |a :: b :: [] when (a = b && state.IsInitialHand && promptSplit())->
+        |a :: b :: [] when (a = b && state.IsInitialHand && promptSplit()) ->
 
             let halfBet = state.BetSize / 2
             do playerTurn { state with 
@@ -118,15 +123,17 @@ let Game _ =
 
                 match checkBust playerHand' with
                 |true ->
-                    do Console.Write $"The player busted! ( {Card.toStringHand playerHand'})"
-                    do deal { state with
+                    do 
+                        Console.Write $"The player busted! ( {Card.toStringHand playerHand'})"
+                        deal { state with
                                 Shoe = shoe'
                                 PlayerHand = playerHand'
                                 Bankroll = state.Bankroll - (2*state.BetSize)}
                 |false ->
 
-                do Console.WriteLine $"Your hand: {Card.toStringHand playerHand'}"
-                do dealerTurn { state with 
+                do 
+                    Console.WriteLine $"Your hand: {Card.toStringHand playerHand'}"
+                    dealerTurn { state with 
                                     Shoe = shoe'
                                     PlayerHand = playerHand'
                                     BetSize = 2*state.BetSize}
@@ -138,16 +145,18 @@ let Game _ =
 
     and dealerTurn (state :GameState) =
         
-        do Console.WriteLine()
-        do Console.WriteLine "Dealer's Hand:"
-        do Card.printHand state.DealerHand
-        do Console.ReadLine() |> ignore
+        do 
+            Console.WriteLine()
+            Console.WriteLine "Dealer's Hand:"
+            Card.printHand state.DealerHand
+            Console.ReadLine() |> ignore
 
         match evaluate state.DealerHand with
         |handValue when handValue > 21 ->
-            do Console.WriteLine $"The House busted!"
-            do Console.WriteLine $"You profit {state.BetSize}"
-            do deal { state with Bankroll = state.Bankroll + state.BetSize }
+            do 
+                Console.WriteLine $"The House busted!"
+                Console.WriteLine $"You profit {state.BetSize}"
+                deal { state with Bankroll = state.Bankroll + state.BetSize }
 
         |handValue when handValue > 16 ->
             do resolution state
@@ -162,19 +171,23 @@ let Game _ =
 
         match evaluate state.PlayerHand, evaluate state.DealerHand with
         |p, d when p > d -> 
-            do Console.WriteLine $"You win the hand! Player ({p}) vs House ({d})"
-            do Console.WriteLine $"You profit {state.BetSize}"
-            deal { state with Bankroll = state.Bankroll + state.BetSize }
+            do 
+                Console.WriteLine $"You win the hand! Player ({p}) vs House ({d})"
+                Console.WriteLine $"You profit {state.BetSize}"
+                deal { state with Bankroll = state.Bankroll + state.BetSize }
 
         |p, d when p < d -> 
-            do Console.WriteLine $"The house wins the hand. Player ({p}) vs House ({d})"
-            deal { state with Bankroll = state.Bankroll - state.BetSize }
+            do 
+                Console.WriteLine $"The house wins the hand. Player ({p}) vs House ({d})"
+                deal { state with Bankroll = state.Bankroll - state.BetSize }
 
         |p, d when p = d -> 
-            do Console.WriteLine $"It's a tie! Player ({p}) vs House ({d})"
-            deal state
+            do 
+                Console.WriteLine $"It's a tie! Player ({p}) vs House ({d})"
+                deal state
 
-        |_ -> failwith "Unexpected case in pattern match"
+        |_ ->  
+            do failwith "Unexpected case in pattern match"
     
     do deal {
         Shoe = Card.randomShoePermutation()
@@ -184,6 +197,6 @@ let Game _ =
         BetSize         = 0<Dollars>
         InactiveHand    = None
         IsInitialHand   = false
-        }
+    }
 
     0
