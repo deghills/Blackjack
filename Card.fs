@@ -80,7 +80,8 @@
         |King   -> "King "
         |Ace    -> "Ace "
 
-    let toStringHand = List.map toString >> List.reduce (+)
+    let toStringHand = List.map toString >> List.reduce (+) >> (fun s -> s + "\b")
+
     let print = toString >> Console.Write
     let println = toString >> Console.WriteLine
 
