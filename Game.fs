@@ -25,20 +25,30 @@
                     BetSize         = inactiveBet
                     IsInitialHand   = false }
         |None ->
+
+        match state.Bankroll with
+        |amount when amount <= 0<Dollars> -> 
+            Console.WriteLine "You have ran out of money"
+        |_ ->
     
         Console.WriteLine "//////"
         Console.WriteLine "////// !NEW ROUND!"
         Console.WriteLine "//////"
         Console.WriteLine $"Your bankroll: {state.Bankroll}"
 
-        let rec promptBet() = 
+        let rec promptBet bankroll = 
             do Console.WriteLine "What is your bet?"
             
             match Console.ReadLine() |> Int32.TryParse with
-            |true, result -> result * 1<Dollars>
-            |false, _ -> promptBet()
+            |true, result when (result * 1<Dollars>) <= bankroll -> 
+                result * 1<Dollars>
+            |true, _ -> 
+                do Console.WriteLine "You cannot afford this bet"
+                promptBet bankroll
+            |false, _ -> 
+                promptBet bankroll
 
-        let bet = promptBet()
+        let bet = promptBet state.Bankroll
         let shoe', playerHand = Card.drawCards 2 state.Shoe []
         let shoe'', dealerHand = Card.drawCards 2 shoe' []
 
