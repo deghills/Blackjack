@@ -50,8 +50,7 @@
             deal 
                 { state with 
                     Shoe        = shoe''
-                    Bankroll    = state.Bankroll + threeToTwo
-                }
+                    Bankroll    = state.Bankroll + threeToTwo }
         |_ ->
             
         playerTurn 
