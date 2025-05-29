@@ -24,7 +24,8 @@
                 then acc
             elif maxEvaluation <= 21 
                 then maxEvaluation
-            else evaluateAces (acc+1) (aces-1)
+            else 
+                evaluateAces (acc+1) (aces-1)
 
         let rec loop acc aces remaining =
             match remaining with 
@@ -63,7 +64,7 @@
 
         loop 0 0 hand
 
-    let checkBust = evaluate >> (fun x -> x>21)
+    let checkBust = evaluate >> (<) 21
 
     let toString = function
         |Two    -> "Two "
@@ -80,11 +81,11 @@
         |King   -> "King "
         |Ace    -> "Ace "
 
-    let toStringHand = List.map toString >> List.reduce(+)
+    let toStringHand = List.map toString >> List.reduce (+)
     let print = toString >> Console.Write
     let println = toString >> Console.WriteLine
 
-    let printHand = List.map print >> ignore
+    let printHand = List.iter print
 
     let orderedShoe =
         let quadruple l = 
@@ -115,12 +116,12 @@
             newShoe.Tail, newShoe.Head :: hand
 
     let drawCards shoe hand nOfCards =
-        let rec loop remaining acc depth = 
+        let rec loop depth remaining acc = 
             match depth with
             |n when (n <= 0) ->
                 remaining, acc
 
             |n ->
-                let newShoe, newHand = drawCard remaining acc
-                loop newShoe newHand (n-1)
+                drawCard remaining acc
+                ||> loop (n-1)
         loop shoe hand nOfCards
