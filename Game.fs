@@ -4,13 +4,13 @@
 
     [<Measure>] type Dollars
     type GameState = 
-        {   PlayerHand      :Card list
-        ;   InactiveHand    :(Card*int<Dollars>) option
-        ;   DealerHand      :Card list
-        ;   Shoe            :Card list
-        ;   IsInitialHand   :bool
-        ;   Bankroll    :int<Dollars>
-        ;   BetSize     :int<Dollars> }
+        { PlayerHand    :Card list
+        ; InactiveHand  :(Card*int<Dollars>) option
+        ; DealerHand    :Card list
+        ; Shoe          :Card list
+        ; IsInitialHand :bool
+        ; Bankroll      :int<Dollars>
+        ; BetSize       :int<Dollars> }
 
     let deal state = do
         match state.InactiveHand with
@@ -54,14 +54,14 @@
                 }
         |_ ->
             
-        playerTurn {   
-            PlayerHand  = playerHand
-            DealerHand  = dealerHand
-            Shoe        = shoe''
-            Bankroll    = state.Bankroll
-            BetSize     = bet
-            InactiveHand = state.InactiveHand
-            IsInitialHand = true }
+        playerTurn 
+            { PlayerHand  = playerHand
+            ; DealerHand  = dealerHand
+            ; Shoe        = shoe''
+            ; Bankroll    = state.Bankroll
+            ; BetSize     = bet
+            ; InactiveHand = state.InactiveHand
+            ; IsInitialHand = true }
 
     let playerTurn state = do
         Console.WriteLine()
@@ -112,7 +112,7 @@
                     { state with 
                         Shoe = shoe'
                         PlayerHand = playerHand' 
-                        IsInitialHand = false}
+                        IsInitialHand = false }
                 
             |"stay" -> 
                 dealerTurn state

@@ -27,8 +27,7 @@
             else 
                 evaluateAces (acc+1) (aces-1)
 
-        let rec loop acc aces remaining =
-            match remaining with 
+        let rec loop acc aces = function 
             |[] ->
                 evaluateAces acc aces
 
