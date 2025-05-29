@@ -96,10 +96,10 @@
             let halfBet = state.BetSize / 2
             playerTurn 
                 { state with 
-                    PlayerHand = [state.PlayerHand.Head]
-                    BetSize = halfBet
-                    InactiveHand = Some (state.PlayerHand.Tail.Head, halfBet)
-                    IsInitialHand = false }
+                    PlayerHand      = [state.PlayerHand.Head]
+                    BetSize         = halfBet
+                    InactiveHand    = Some (state.PlayerHand.Tail.Head, halfBet)
+                    IsInitialHand   = false }
         |_ ->
 
         let rec promptAction() = do
@@ -110,9 +110,9 @@
                 let shoe', playerHand' = Card.drawCard state.Shoe state.PlayerHand
                 playerTurn 
                     { state with 
-                        Shoe = shoe'
-                        PlayerHand = playerHand' 
-                        IsInitialHand = false }
+                        Shoe            = shoe'
+                        PlayerHand      = playerHand' 
+                        IsInitialHand   = false }
                 
             |"stay" -> 
                 dealerTurn state
@@ -125,16 +125,16 @@
                     Console.Write $"The player busted! ( {Card.toStringHand playerHand'})"
                     deal 
                         { state with
-                            Shoe = shoe'
-                            PlayerHand = playerHand'
-                            Bankroll = state.Bankroll - (2*state.BetSize) }
+                            Shoe        = shoe'
+                            PlayerHand  = playerHand'
+                            Bankroll    = state.Bankroll - (2*state.BetSize) }
                 |false ->
                     Console.WriteLine $"Your hand: {Card.toStringHand playerHand'}"
                     dealerTurn 
                         { state with 
-                            Shoe = shoe'
-                            PlayerHand = playerHand'
-                            BetSize = 2*state.BetSize }
+                            Shoe        = shoe'
+                            PlayerHand  = playerHand'
+                            BetSize     = 2*state.BetSize }
 
             |_ -> 
                 promptAction()
